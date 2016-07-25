@@ -1,0 +1,86 @@
+body {
+    color: #ffffff;
+}
+/* 调整导航栏 */
+@media (min-width: 1200px) {
+    .container {
+        width: 970px;
+    }
+}
+
+.blog-masthead {
+    background-image: url('/Images/masthead.png');
+    -webkit-box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+    box-shadow: inset 0 -2px 5px rgba(0,0,0,.1);
+    height: 80px;
+}
+
+
+/*  导航栏样式  */
+.blog-nav-item {
+    position: relative;
+    display: inline-block;
+    padding: 25px 20px 20px 20px;
+    font-weight: 500;
+    color: #cdddeb;
+    font-size: large;
+}
+.nav-first{
+    padding:25px 20px 20px 0px;
+}
+.nav-end{
+    padding:25px 20px 20px 40px;
+}
+
+/*  鼠标悬浮样式  */
+.blog-nav-item:hover,
+.blog-nav-item:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* 导航栏下页头的样式  */
+.blog-header {
+    padding-top: 100px;
+    padding-bottom: 20px;
+}
+.blog-description {
+    color: #999;
+}
+
+/*  页面内容的样式  */
+.sidebar-module-inset {
+    padding: 15px;
+    border-radius: 4px;
+}
+.blog-content {
+    color: #2e6da4;
+}
+.blog-sidebar {
+    color: #232131;
+}
+.sidebar-module {
+    padding: 5px 15px;
+    margin: 0 -15px 15px;
+}
+
+.comment {
+    color: #000000;
+}
+.textbox {
+    width:65%;
+}
+
+
+
+/*  页脚样式  */
+.blog-footer {
+    padding: 30px 0;
+    color: #cdddeb;
+    text-align: center;
+    background-color: #24273a;
+    border-top: 1px solid #e5e5e5;
+}
+.blog-footer p:last-child {
+    margin-bottom: 0;
+}
