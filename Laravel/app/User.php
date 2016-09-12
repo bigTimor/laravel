@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Foundation\Auth\Admin as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Admin extends Authenticatable
+class User extends Authenticatable
 {
     /**
      * The attributes that are mass assignable.

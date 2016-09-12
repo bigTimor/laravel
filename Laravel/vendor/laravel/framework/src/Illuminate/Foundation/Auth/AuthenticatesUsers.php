@@ -70,6 +70,7 @@ trait AuthenticatesUsers
         }
 
         $credentials = $this->getCredentials($request);
+
         if (Auth::guard($this->getGuard())->attempt($credentials, $request->has('remember'))) {
             return $this->handleUserWasAuthenticated($request, $throttles);
         }
@@ -80,7 +81,7 @@ trait AuthenticatesUsers
         if ($throttles && ! $lockedOut) {
             $this->incrementLoginAttempts($request);
         }
-
+        view('');
         return $this->sendFailedLoginResponse($request);
     }
 
@@ -174,7 +175,7 @@ trait AuthenticatesUsers
     {
         Auth::guard($this->getGuard())->logout();
 
-        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/login');
     }
 
     /**

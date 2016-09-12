@@ -43,7 +43,7 @@
                 <a href="#" class="blog-nav-item" >
                         {{ Auth::user()->name }}
                 </a>
-                <a href="{{ url('/logout') }}">退出</a></li>
+                <a class="blog-nav-item" href="{{ url('/logout') }}">退出</a></li>
             @endif
         </nav>
     </div>
@@ -84,13 +84,5 @@
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="{{ asset('/Js/ie10-viewport-bug-workaround.js') }}"></script>
 <script type="text/javascript" src="{{ asset('/layer/layer.js') }}"></script>
-<script>
-    function login(){
-        layer.msg('登录',{icon: 6});
-    }
-    function register(){
-        alert('注册');
-    }
-</script>
 </body>
 </html>
