@@ -53,7 +53,7 @@
     <div class="blog-header">
         <h1 class="blog-title"><span style="color: #757d97">个人博客</span></h1>
         <br />
-        <p class="lead blog-description">任何事情，现在开始去做，都不晚！ 我们的征途是星辰大海！</p>
+        <p class="lead blog-description">任何事情，现在开始去做，都不晚！</p>
     </div>
     <div class="row blog-content">
 
