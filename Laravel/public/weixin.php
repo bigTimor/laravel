@@ -11,7 +11,7 @@ $wechatObj->valid();
 */
 
 //开启自动回复功能
-$wechatObj->resoonseMsg();
+$wechatObj->responseMsg();
 
 class wechatCallbackapiTest
 {
@@ -87,7 +87,7 @@ class wechatCallbackapiTest
                 }
 
         }else {
-        	echo "";
+        	echo "hello!";
         	exit;
         }
     }
