@@ -15,7 +15,7 @@ $wechatObj->responseMsg();
 
 class wechatCallbackapiTest
 {
-	/*  验证成功后，关闭验证方法
+
 	public function valid()
     {
         $echoStr = $_GET["echostr"];
@@ -51,7 +51,6 @@ class wechatCallbackapiTest
 			return false;
 		}
 	}
-	*/
 
     public function responseMsg()
     {
