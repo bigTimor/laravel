@@ -141,7 +141,7 @@ class Builder
      *
      * @param  mixed  $id
      * @param  array  $columns
-     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|static[]|static|null
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|null
      */
     public function find($id, $columns = ['*'])
     {
@@ -155,7 +155,7 @@ class Builder
     }
 
     /**
-     * Find multiple models by their primary keys.
+     * Find a model by its primary key.
      *
      * @param  array  $ids
      * @param  array  $columns
@@ -194,72 +194,6 @@ class Builder
         }
 
         throw (new ModelNotFoundException)->setModel(get_class($this->model));
-    }
-
-    /**
-     * Find a model by its primary key or return fresh model instance.
-     *
-     * @param  mixed  $id
-     * @param  array  $columns
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function findOrNew($id, $columns = ['*'])
-    {
-        if (! is_null($model = $this->find($id, $columns))) {
-            return $model;
-        }
-
-        return $this->model->newInstance();
-    }
-
-    /**
-     * Get the first record matching the attributes or instantiate it.
-     *
-     * @param  array  $attributes
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function firstOrNew(array $attributes)
-    {
-        if (! is_null($instance = $this->where($attributes)->first())) {
-            return $instance;
-        }
-
-        return $this->model->newInstance($attributes);
-    }
-
-    /**
-     * Get the first record matching the attributes or create it.
-     *
-     * @param  array  $attributes
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function firstOrCreate(array $attributes)
-    {
-        if (! is_null($instance = $this->where($attributes)->first())) {
-            return $instance;
-        }
-
-        $instance = $this->model->newInstance($attributes);
-
-        $instance->save();
-
-        return $instance;
-    }
-
-    /**
-     * Create or update a record matching the attributes, and fill it with values.
-     *
-     * @param  array  $attributes
-     * @param  array  $values
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    public function updateOrCreate(array $attributes, array $values = [])
-    {
-        $instance = $this->firstOrNew($attributes);
-
-        $instance->fill($values)->save();
-
-        return $instance;
     }
 
     /**
@@ -349,33 +283,6 @@ class Builder
             $page++;
 
             $results = $this->forPage($page, $count)->get();
-        }
-
-        return true;
-    }
-
-    /**
-     * Chunk the results of a query by comparing numeric IDs.
-     *
-     * @param  int  $count
-     * @param  callable  $callback
-     * @param  string  $column
-     * @return bool
-     */
-    public function chunkById($count, callable $callback, $column = 'id')
-    {
-        $lastId = null;
-
-        $results = $this->forPageAfterId($count, 0, $column)->get();
-
-        while (! $results->isEmpty()) {
-            if (call_user_func($callback, $results) === false) {
-                return false;
-            }
-
-            $lastId = $results->last()->{$column};
-
-            $results = $this->forPageAfterId($count, $lastId, $column)->get();
         }
 
         return true;
@@ -507,8 +414,8 @@ class Builder
      * Increment a column's value by a given amount.
      *
      * @param  string  $column
-     * @param  int  $amount
-     * @param  array  $extra
+     * @param  int     $amount
+     * @param  array   $extra
      * @return int
      */
     public function increment($column, $amount = 1, array $extra = [])
@@ -522,8 +429,8 @@ class Builder
      * Decrement a column's value by a given amount.
      *
      * @param  string  $column
-     * @param  int  $amount
-     * @param  array  $extra
+     * @param  int     $amount
+     * @param  array   $extra
      * @return int
      */
     public function decrement($column, $amount = 1, array $extra = [])
@@ -623,8 +530,8 @@ class Builder
     /**
      * Eagerly load the relationship on a set of models.
      *
-     * @param  array  $models
-     * @param  string  $name
+     * @param  array     $models
+     * @param  string    $name
      * @param  \Closure  $constraints
      * @return array
      */
@@ -910,7 +817,7 @@ class Builder
      */
     protected function shouldRunExistsQuery($operator, $count)
     {
-        return ($operator === '>=' || $operator === '<') && $count === 1;
+        return ($operator === '>=' && $count === 1) || ($operator === '<' && $count === 1);
     }
 
     /**

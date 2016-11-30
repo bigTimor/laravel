@@ -12,6 +12,7 @@ use Illuminate\Support\Traits\Macroable;
 use Illuminate\Contracts\Support\Arrayable;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 class Request extends SymfonyRequest implements Arrayable, ArrayAccess
 {
@@ -23,13 +24,6 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
      * @var string
      */
     protected $json;
-
-    /**
-     * All of the converted files for the request.
-     *
-     * @var array
-     */
-    protected $convertedFiles;
 
     /**
      * The user resolver callback.
@@ -109,19 +103,6 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
         $question = $this->getBaseUrl().$this->getPathInfo() == '/' ? '/?' : '?';
 
         return $query ? $this->url().$question.$query : $this->url();
-    }
-
-    /**
-     * Get the full URL for the request with the added query string parameters.
-     *
-     * @param  array  $query
-     * @return string
-     */
-    public function fullUrlWithQuery(array $query)
-    {
-        return count($this->query()) > 0
-                        ? $this->url().'/?'.http_build_query(array_merge($this->query(), $query))
-                        : $this->fullUrl().'?'.http_build_query($query);
     }
 
     /**
@@ -376,17 +357,6 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
     }
 
     /**
-     * Intersect an array of items with the input data.
-     *
-     * @param  array|mixed  $keys
-     * @return array
-     */
-    public function intersect($keys)
-    {
-        return array_filter($this->only($keys));
-    }
-
-    /**
      * Retrieve a query string item from the request.
      *
      * @param  string  $key
@@ -428,11 +398,7 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
      */
     public function allFiles()
     {
-        $files = $this->files->all();
-
-        return $this->convertedFiles
-                    ? $this->convertedFiles
-                    : $this->convertedFiles = $this->convertUploadedFiles($files);
+        return $this->convertUploadedFiles($this->files->all());
     }
 
     /**
@@ -444,7 +410,7 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
     protected function convertUploadedFiles(array $files)
     {
         return array_map(function ($file) {
-            if (is_null($file) || (is_array($file) && empty(array_filter($file)))) {
+            if (is_array($file) && empty(array_filter($file))) {
                 return $file;
             }
 
@@ -463,7 +429,13 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
      */
     public function file($key = null, $default = null)
     {
-        return data_get($this->allFiles(), $key, $default);
+        $file = data_get($this->files->all(), $key, $default);
+
+        if (is_array($file)) {
+            return $this->convertUploadedFiles($file);
+        } elseif ($file instanceof SymfonyUploadedFile) {
+            return $this->convertUploadedFiles([$file])[0];
+        }
     }
 
     /**
@@ -496,17 +468,6 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
     protected function isValidFile($file)
     {
         return $file instanceof SplFileInfo && $file->getPath() != '';
-    }
-
-    /**
-     * Determine if a header is set on the request.
-     *
-     * @param  string  $key
-     * @return bool
-     */
-    public function hasHeader($key)
-    {
-        return ! is_null($this->header($key));
     }
 
     /**
@@ -683,7 +644,11 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
 
         $split = explode('/', $actual);
 
-        return isset($split[1]) && preg_match('#'.preg_quote($split[0], '#').'/.+\+'.preg_quote($split[1], '#').'#', $type);
+        if (isset($split[1]) && preg_match('/'.$split[0].'\/.+\+'.$split[1].'/', $type)) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

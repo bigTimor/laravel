@@ -278,7 +278,7 @@ class Blueprint
     /**
      * Indicate that the given foreign key should be dropped.
      *
-     * @param  string|array  $index
+     * @param  string  $index
      * @return \Illuminate\Support\Fluent
      */
     public function dropForeign($index)
@@ -775,17 +775,15 @@ class Blueprint
     /**
      * Add nullable creation and update timestamps to the table.
      *
-     * Alias for self::timestamps().
-     *
      * @return void
      */
     public function nullableTimestamps()
     {
-        $this->timestamps();
+        return $this->timestamps();
     }
 
     /**
-     * Add nullable creation and update timestamps to the table.
+     * Add creation and update timestamps to the table.
      *
      * @return void
      */
@@ -838,28 +836,6 @@ class Blueprint
     public function uuid($column)
     {
         return $this->addColumn('uuid', $column);
-    }
-
-    /**
-     * Create a new IP address column on the table.
-     *
-     * @param  string  $column
-     * @return \Illuminate\Support\Fluent
-     */
-    public function ipAddress($column)
-    {
-        return $this->addColumn('ipAddress', $column);
-    }
-
-    /**
-     * Create a new MAC address column on the table.
-     *
-     * @param  string  $column
-     * @return \Illuminate\Support\Fluent
-     */
-    public function macAddress($column)
-    {
-        return $this->addColumn('macAddress', $column);
     }
 
     /**
@@ -956,7 +932,7 @@ class Blueprint
      * @param  array   $parameters
      * @return \Illuminate\Support\Fluent
      */
-    public function addColumn($type, $name, array $parameters = [])
+    protected function addColumn($type, $name, array $parameters = [])
     {
         $attributes = array_merge(compact('type', 'name'), $parameters);
 

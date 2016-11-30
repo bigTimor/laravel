@@ -81,7 +81,7 @@ trait AuthenticatesUsers
         if ($throttles && ! $lockedOut) {
             $this->incrementLoginAttempts($request);
         }
-        view('');
+
         return $this->sendFailedLoginResponse($request);
     }
 
@@ -175,17 +175,7 @@ trait AuthenticatesUsers
     {
         Auth::guard($this->getGuard())->logout();
 
-        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/login');
-    }
-
-    /**
-     * Get the guest middleware for the application.
-     */
-    public function guestMiddleware()
-    {
-        $guard = $this->getGuard();
-
-        return $guard ? 'guest:'.$guard : 'guest';
+        return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
 
     /**
@@ -206,7 +196,7 @@ trait AuthenticatesUsers
     protected function isUsingThrottlesLoginsTrait()
     {
         return in_array(
-            ThrottlesLogins::class, class_uses_recursive(static::class)
+            ThrottlesLogins::class, class_uses_recursive(get_class($this))
         );
     }
 

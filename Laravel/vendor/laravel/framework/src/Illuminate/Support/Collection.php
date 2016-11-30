@@ -275,6 +275,10 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function first(callable $callback = null, $default = null)
     {
+        if (is_null($callback)) {
+            return count($this->items) > 0 ? reset($this->items) : value($default);
+        }
+
         return Arr::first($this->items, $callback, $default);
     }
 
@@ -334,7 +338,6 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      * Group an associative array by a field or using a callback.
      *
      * @param  callable|string  $groupBy
-     * @param  bool  $preserveKeys
      * @return static
      */
     public function groupBy($groupBy, $preserveKeys = false)
@@ -344,19 +347,13 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
         $results = [];
 
         foreach ($this->items as $key => $value) {
-            $groupKeys = $groupBy($value, $key);
+            $groupKey = $groupBy($value, $key);
 
-            if (! is_array($groupKeys)) {
-                $groupKeys = [$groupKeys];
+            if (! array_key_exists($groupKey, $results)) {
+                $results[$groupKey] = new static;
             }
 
-            foreach ($groupKeys as $groupKey) {
-                if (! array_key_exists($groupKey, $results)) {
-                    $results[$groupKey] = new static;
-                }
-
-                $results[$groupKey]->offsetSet($preserveKeys ? $key : null, $value);
-            }
+            $results[$groupKey]->offsetSet($preserveKeys ? $key : null, $value);
         }
 
         return new static($results);
@@ -461,6 +458,10 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
      */
     public function last(callable $callback = null, $default = null)
     {
+        if (is_null($callback)) {
+            return count($this->items) > 0 ? end($this->items) : value($default);
+        }
+
         return Arr::last($this->items, $callback, $default);
     }
 
@@ -543,28 +544,6 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     }
 
     /**
-     * Create a collection by using this collection for keys and another for its values.
-     *
-     * @param  mixed  $values
-     * @return static
-     */
-    public function combine($values)
-    {
-        return new static(array_combine($this->all(), $this->getArrayableItems($values)));
-    }
-
-    /**
-     * Union the collection with the given items.
-     *
-     * @param  mixed  $items
-     * @return void
-     */
-    public function union($items)
-    {
-        return new static($this->items + $this->getArrayableItems($items));
-    }
-
-    /**
      * Get the min value of a given key.
      *
      * @param  string|null  $key
@@ -642,7 +621,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     }
 
     /**
-     * Get and remove an item from the collection.
+     * Pulls an item from the collection.
      *
      * @param  mixed  $key
      * @param  mixed  $default
@@ -1021,6 +1000,7 @@ class Collection implements ArrayAccess, Arrayable, Countable, IteratorAggregate
     {
         return array_map(function ($value) {
             return $value instanceof Arrayable ? $value->toArray() : $value;
+
         }, $this->items);
     }
 

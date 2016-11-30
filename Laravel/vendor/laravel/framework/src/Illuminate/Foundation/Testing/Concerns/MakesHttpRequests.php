@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use PHPUnit_Framework_Assert as PHPUnit;
-use Symfony\Component\HttpFoundation\File\UploadedFile as SymfonyUploadedFile;
 
 trait MakesHttpRequests
 {
@@ -57,8 +56,6 @@ trait MakesHttpRequests
      */
     public function json($method, $uri, array $data = [], array $headers = [])
     {
-        $files = $this->extractFilesFromDataArray($data);
-
         $content = json_encode($data);
 
         $headers = array_merge([
@@ -68,31 +65,10 @@ trait MakesHttpRequests
         ], $headers);
 
         $this->call(
-            $method, $uri, [], [], $files, $this->transformHeadersToServerVars($headers), $content
+            $method, $uri, [], [], [], $this->transformHeadersToServerVars($headers), $content
         );
 
         return $this;
-    }
-
-    /**
-     * Extract the file uploads from the given data array.
-     *
-     * @param  array  $data
-     * @return array
-     */
-    protected function extractFilesFromDataArray(&$data)
-    {
-        $files = [];
-
-        foreach ($data as $key => $value) {
-            if ($value instanceof SymfonyUploadedFile) {
-                $files[$key] = $value;
-
-                unset($data[$key]);
-            }
-        }
-
-        return $files;
     }
 
     /**
@@ -496,8 +472,6 @@ trait MakesHttpRequests
 
         $this->currentUri = $this->prepareUrlForRequest($uri);
 
-        $this->resetPageContext();
-
         $request = Request::create(
             $this->currentUri, $method, $parameters,
             $cookies, $files, array_replace($this->serverVariables, $server), $content
@@ -602,7 +576,7 @@ trait MakesHttpRequests
         foreach ($headers as $name => $value) {
             $name = strtr(strtoupper($name), '-', '_');
 
-            if (! Str::startsWith($name, $prefix) && $name != 'CONTENT_TYPE') {
+            if (! starts_with($name, $prefix) && $name != 'CONTENT_TYPE') {
                 $name = $prefix.$name;
             }
 

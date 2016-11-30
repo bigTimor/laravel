@@ -31,48 +31,6 @@ if (! function_exists('abort')) {
     }
 }
 
-if (! function_exists('abort_if')) {
-    /**
-     * Throw an HttpException with the given data if the given condition is true.
-     *
-     * @param  bool    $boolean
-     * @param  int     $code
-     * @param  string  $message
-     * @param  array   $headers
-     * @return void
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     */
-    function abort_if($boolean, $code, $message = '', array $headers = [])
-    {
-        if ($boolean) {
-            abort($code, $message, $headers);
-        }
-    }
-}
-
-if (! function_exists('abort_unless')) {
-    /**
-     * Throw an HttpException with the given data unless the given condition is true.
-     *
-     * @param  bool    $boolean
-     * @param  int     $code
-     * @param  string  $message
-     * @param  array   $headers
-     * @return void
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-     */
-    function abort_unless($boolean, $code, $message = '', array $headers = [])
-    {
-        if (! $boolean) {
-            abort($code, $message, $headers);
-        }
-    }
-}
-
 if (! function_exists('action')) {
     /**
      * Generate a URL to a controller action.
@@ -257,7 +215,7 @@ if (! function_exists('csrf_field')) {
     /**
      * Generate a CSRF token form field.
      *
-     * @return \Illuminate\Support\HtmlString
+     * @return string
      */
     function csrf_field()
     {
@@ -329,24 +287,20 @@ if (! function_exists('elixir')) {
      * Get the path to a versioned Elixir file.
      *
      * @param  string  $file
-     * @param  string  $buildDirectory
      * @return string
      *
      * @throws \InvalidArgumentException
      */
-    function elixir($file, $buildDirectory = 'build')
+    function elixir($file)
     {
-        static $manifest;
-        static $manifestPath;
+        static $manifest = null;
 
-        if (is_null($manifest) || $manifestPath !== $buildDirectory) {
-            $manifest = json_decode(file_get_contents(public_path($buildDirectory.'/rev-manifest.json')), true);
-
-            $manifestPath = $buildDirectory;
+        if (is_null($manifest)) {
+            $manifest = json_decode(file_get_contents(public_path('build/rev-manifest.json')), true);
         }
 
         if (isset($manifest[$file])) {
-            return '/'.$buildDirectory.'/'.$manifest[$file];
+            return '/build/'.$manifest[$file];
         }
 
         throw new InvalidArgumentException("File {$file} not defined in asset manifest.");
@@ -483,7 +437,7 @@ if (! function_exists('method_field')) {
      * Generate a form field to spoof the HTTP verb used by forms.
      *
      * @param  string  $method
-     * @return \Illuminate\Support\HtmlString
+     * @return string
      */
     function method_field($method)
     {
@@ -612,11 +566,12 @@ if (! function_exists('route')) {
      * @param  string  $name
      * @param  array   $parameters
      * @param  bool    $absolute
+     * @param  \Illuminate\Routing\Route  $route
      * @return string
      */
-    function route($name, $parameters = [], $absolute = true)
+    function route($name, $parameters = [], $absolute = true, $route = null)
     {
-        return app('url')->route($name, $parameters, $absolute);
+        return app('url')->route($name, $parameters, $absolute, $route);
     }
 }
 

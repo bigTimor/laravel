@@ -5,124 +5,38 @@
     </div>
 @endsection
 @section('content')
-    <form class="login-form" action="{{ url('/register') }}" method="POST">
+    <form class="login-form" action="{{ url('/register') }}" onsubmit="return validate_form_register()" method="POST">
         {!! csrf_field() !!}
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                <input type="text" class="form-control" placeholder="用户名" name="name" value="{{ old('name') }}">
+                <input type="text" class="form-control" placeholder="用户名" name="name" onblur="validate_name(this)" value="{{ old('name') }}">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-envelope-o"></i></span>
-                <input type="text" class="form-control" placeholder="邮箱账号" name="email" value="{{ old('email') }}">
+                <input type="text" class="form-control" placeholder="邮箱账号" name="email" onblur="validate_email(this)" value="{{ old('email') }}">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input type="password" class="form-control" placeholder="请输入密码" name="password">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                <input type="password" class="form-control" placeholder="确认密码" name="password_confirmation">
+                <input type="password" class="form-control" placeholder="密码" name="password" onblur="validate_password(this)">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-eye"></i></span>
-                <input type="text" class="form-control" name="verify" placeholder="请输入验证码">
+                <input type="text" class="form-control" name="verify" placeholder="验证码" onblur="validate_verify(this)">
                             <span class="input-group-addon verifyimg-box">
                                 <img class="verifyimg reload-verify" alt="验证码" src="{:U('verify')}" title="点击刷新">
                             </span>
             </div>
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block submit ajax-post" target-form="login-form">立即注册</button>
+            <button id="submit" type="submit" class="btn btn-primary btn-block submit ajax-post" target-form="login-form">立即注册</button>
             <a href="{{ url('/login') }}">返回登陆</a>
         </div>
     </form>
-<!--
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Register</div>
-                <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/register') }}">
-                        {!! csrf_field() !!}
-
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label class="col-md-4 control-label">Name</label>
-
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" name="name" value="{{ old('name') }}">
-
-                                @if ($errors->has('name'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input type="email" class="form-control" name="email" value="{{ old('email') }}">
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label class="col-md-4 control-label">Password</label>
-
-                            <div class="col-md-6">
-                                <input type="password" class="form-control" name="password">
-
-                                @if ($errors->has('password'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                            <label class="col-md-4 control-label">Confirm Password</label>
-
-                            <div class="col-md-6">
-                                <input type="password" class="form-control" name="password_confirmation">
-
-                                @if ($errors->has('password_confirmation'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password_confirmation') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-btn fa-user"></i>Register
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
--->
 @endsection
